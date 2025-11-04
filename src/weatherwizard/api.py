@@ -1,4 +1,5 @@
 from __future__ import annotations
+from .cache import read_cache, write_cache
 import requests
 
 # indirection for easier monkeypatching in tests
@@ -24,6 +25,11 @@ def _geocode_city(name: str) -> tuple[float, float, str]:
 
 def fetch_current_weather(city: str) -> dict:
     """Fetch current weather for city; returns dict with keys: city, temperature, windspeed."""
+    city_key = city.strip().lower()
+    cache = read_cache()
+    if city_key in cache:
+        return cache[city_key]
+    
     lat, lon, resolved = _geocode_city(city)
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
@@ -40,4 +46,7 @@ def fetch_current_weather(city: str) -> dict:
     windspeed = float(current.get("windspeed"))
     # Open-Meteo wind is m/s by default in some endpoints; assume m/s -> km/s (x 3.6)
     windspeed_kmh = windspeed * 3.6
-    return {"city": resolved, "temperature": temperature, "windspeed": round(windspeed_kmh, 1)}
+    result = {"city": resolved, "temperature": temperature, "windspeed": round(windspeed_kmh, 1)}
+    cache[city_key] = result
+    write_cache(cache)
+    return result
