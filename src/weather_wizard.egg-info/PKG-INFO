@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: weather-wizard
+Version: 0.1.0
+Summary: A command-line weather application that provides current weather information for any city worldwide.
+Author: Victor O.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests>=2.31.0
+Requires-Dist: rich>=13.3.4
+Requires-Dist: python-dotenv>=1.0.0
+Dynamic: license-file
+
+# weather-wizard

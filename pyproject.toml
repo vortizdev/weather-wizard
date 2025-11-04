@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weather-wizard"
+version = "0.1.0"
+description = "A command-line weather application that provides current weather information for any city worldwide."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31.0",
+    "rich>=13.3.4",
+    "python-dotenv>=1.0.0"
+]
+authors = [{name = "Victor O."}]
+
+[project.scripts]
+weather = "weather_wizard.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
