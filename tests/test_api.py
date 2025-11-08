@@ -1,6 +1,9 @@
 import json
 from types import SimpleNamespace
 from weatherwizard import api
+from weatherwizard.cli import print_weather_row
+from io import StringIO
+from contextlib import redirect_stdout
 
 class DummyResponse:
     def __init__(self, status_code=200, json_data=None):
@@ -80,3 +83,25 @@ def test_fetch_daily_forecast_monkeypatch(monkeypatch):
     assert len(json_data["dates"]) == 3
     assert len(json_data["temperatures_min"]) == 3
     assert len(json_data["temperatures_max"]) == 3
+    
+def test_unit_conversions():
+    assert round(api.c_to_f(0), 1) == 32.0
+    assert round(api.c_to_f(100), 1) == 212.0
+    assert round(api.kmh_to_mph(16.09344), 2) == 10.00
+    
+def test_city_cli_labels_fahrenheit():
+    buf = StringIO()
+    with redirect_stdout(buf):
+        print_weather_row("Test City", temperature=68.0, windspeed=10.0, units="f")
+    out = buf.getvalue()
+    assert "Temperature (°F)" in out
+    assert "Windspeed (mph)" in out
+    
+def test_city_cli_labels_celsius():
+    buf = StringIO()
+    with redirect_stdout(buf):
+        print_weather_row("Test City", temperature=20.0, windspeed=30.0, units="c")
+    out = buf.getvalue()
+    assert "Temperature (°C)" in out
+    assert "Windspeed (km/h)" in out
+    

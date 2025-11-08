@@ -8,6 +8,7 @@ def main():
     
     city_p = sub.add_parser("city", help="Show current weather for a city")
     city_p.add_argument("name", type=str, help='City name, e.g. "Orlando"')
+    city_p.add_argument("--units", choices=["c", "f"], default="c", help="Temperature units: c or f (default c)")
     
     forecast_p = sub.add_parser("forecast", help="Show daily weather forecast for a city")
     forecast_p.add_argument("name", type=str, help='City name, e.g. "Orlando"')
@@ -19,13 +20,19 @@ def main():
     if args.command == "city":
         try:
             data = api.fetch_current_weather(args.name)
+            temp = data["temperature"]
+            wind = data["windspeed"]
+            if args.units == "f":
+                temp = api.c_to_f(temp)
+                wind = api.kmh_to_mph(wind)
             print_weather_row(data["city"], data["temperature"], data["windspeed"])
         except api.ApiError as e:
             print(f"Error: {e}")
             
     elif args.command == "forecast":
         try:
-            data = api.fetch_daily_forecast(args.name, days=args.days)
+            days = max(1, min(args.days, 14))  # constrain days to 1-14
+            data = api.fetch_daily_forecast(args.name, days=days)
             dates = data["dates"]
             tmin = data["temperatures_min"]
             tmax = data["temperatures_max"]

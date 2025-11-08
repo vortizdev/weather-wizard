@@ -13,6 +13,9 @@ class ApiError(Exception):
 def c_to_f(c: float) -> float:
     return c * 9.0 / 5.0 + 32.0
 
+def kmh_to_mph(kmh: float) -> float:
+    return kmh / 1.60934
+
 def _geocode_city(name: str) -> tuple[float, float, str]:
     """Return (lat, lon, resolved_name) using Open-Meteo geocoding API."""
     url = "https://geocoding-api.open-meteo.com/v1/search"
